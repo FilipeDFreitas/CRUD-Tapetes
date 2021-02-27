@@ -10,18 +10,18 @@ import javax.swing.table.DefaultTableModel;
  * @author Filipe de Freitas Martins da Silva - GRR20193884
  */
 public class Controller {
-    private static HashMap<String, Cliente> capitalCities = new HashMap<String, Cliente>();
-    private static ArrayList<Cliente> Clientes = new ArrayList<Cliente>();
+    private static HashMap<String, Cliente> clientes = new HashMap<String, Cliente>();
+    private static HashMap<String, Pedido> pedidos = new HashMap<String, Pedido>();
     
     public static void incluirCliente(String nome, String sobrenome, String CPF){
         if(!(CPF.equals("")||nome.equals("")||sobrenome.equals(""))){
             Cliente c = new Cliente(nome, sobrenome, CPF);
-            capitalCities.put(CPF, c);
+            clientes.put(CPF, c);
         }
     }
     public static void atualizarCliente(String nome, String sobrenome, String CPF){
         if(!CPF.equals("")){
-        Cliente alvo =capitalCities.get(CPF);
+        Cliente alvo =clientes.get(CPF);
         if(nome == ""){
             nome = alvo.getNome();
         }
@@ -30,12 +30,12 @@ public class Controller {
         }
         if(alvo!=null){
         alvo.Alterar(nome, sobrenome);
-        capitalCities.put(CPF, alvo);
+        clientes.put(CPF, alvo);
         }
         }
     }
     public static void removerCliente(String CPF){
-        capitalCities.remove(CPF);
+        clientes.remove(CPF);
     }
     public static Object[] listarCliente(Object[] ClienteAlvo){
         ArrayList<Cliente> Busca= new ArrayList<Cliente>();
@@ -45,7 +45,7 @@ public class Controller {
         String sobrenome=ClienteAlvo[2].toString();
         String cpf=ClienteAlvo[3].toString();
 
-        for(Map.Entry<String, Cliente> c: capitalCities.entrySet()){
+        for(Map.Entry<String, Cliente> c: clientes.entrySet()){
             if((nome.equals("true")&& c.getValue().getNome().matches("(.*)"+busca+"(.*)"))
                     ||(sobrenome.equals("true")&& c.getValue().getSobrenome().matches("(.*)"+busca+"(.*)"))
                     ||(cpf.equals("true")&& c.getValue().getCPF().matches("(.*)"+busca+"(.*)"))){ 
