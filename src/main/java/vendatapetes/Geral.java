@@ -5,6 +5,7 @@ import static vendatapetes.Controller.incluirCliente;
 import static vendatapetes.Controller.removerCliente;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import static vendatapetes.Controller.listarCliente;
 
@@ -32,6 +33,28 @@ public class Geral extends javax.swing.JFrame {
                 Object[] k = {c.getNome(),c.getSobrenome(),c.getCPF()};
                 model.addRow(k);
             }
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+    }
+    private void atualizar( String nome, String sobrenome, String CPF){
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        for(int i = 0;i<model.getRowCount();i++){
+            if( CPF.equals(model.getValueAt(i, 2))&& !CPF.equals("")){
+                if(!nome.equals(""))
+                    model.setValueAt(nome, i, 0);
+                if(!sobrenome.equals(""))
+                model.setValueAt(sobrenome, i, 1);
+            }
+        }
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+    }
+    private void adicionar( String nome, String sobrenome, String CPF){
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        if(!(CPF.equals("")||nome.equals("")||sobrenome.equals("")))
+            model.insertRow(0, new Object[] { nome, sobrenome, CPF });
         jTextField1.setText("");
         jTextField2.setText("");
         jTextField3.setText("");
@@ -216,13 +239,13 @@ public class Geral extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Object [] dado = incluirCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-        refresher(dado);    
+        incluirCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
+        adicionar(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-            Object [] dado = atualizarCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-            refresher(dado); 
+            atualizarCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
+            atualizar(jTextField1.getText(), jTextField2.getText(), jTextField3.getText()); 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -236,8 +259,13 @@ public class Geral extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        Object [] dado = removerCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-        refresher(dado); 
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        // check for selected row first
+            if(jTable1.getSelectedRow() != -1) {
+               removerCliente((String) model.getValueAt(jTable1.getSelectedRow(), 2));
+               model.removeRow(jTable1.getSelectedRow());
+               JOptionPane.showMessageDialog(null, "Selected row deleted successfully");
+           }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
