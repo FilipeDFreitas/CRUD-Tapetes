@@ -6,39 +6,76 @@ import static vendatapetes.Controller.removerCliente;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import static vendatapetes.Controller.listarCliente;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author Filipe de Freitas Martins da Silva - GRR20193884
  */
 public class Geral extends javax.swing.JFrame {
-    /**
-     * Creates new form Interface
-     */
+
+
+    private TableRowSorter<TableModel> rowSorter;
     public Geral() {
         initComponents();
+        rowSorter = new TableRowSorter<>(TabelaCliente.getModel());
+        TextoBusca.getDocument().addDocumentListener(new DocumentListener(){
+        
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                update(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                update(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                update(e);
+            }
+
+        });
+        
         
         
     }
-    public void Listar(String busca,Boolean nome,Boolean sobrenome,Boolean cpf){
-        
-    }
+/**
+     * Creates new form Interface
+     *
+     */
+    private void update(DocumentEvent e) {
+                TabelaCliente.setRowSorter(rowSorter);
+                
+                String text = TextoBusca.getText();
+
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
     private void refresher(Object [] dado){
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) TabelaCliente.getModel();
         model.setRowCount(0);
             for(Object i: dado){
                 Cliente c= (Cliente) i;
                 Object[] k = {c.getNome(),c.getSobrenome(),c.getCPF()};
                 model.addRow(k);
             }
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
+        TextoNome.setText("");
+        TextoSobrenome.setText("");
+        TextoCPF.setText("");
     }
     private void atualizar( String nome, String sobrenome, String CPF){
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) TabelaCliente.getModel();
         for(int i = 0;i<model.getRowCount();i++){
             if( CPF.equals(model.getValueAt(i, 2))&& !CPF.equals("")){
                 if(!nome.equals(""))
@@ -47,18 +84,19 @@ public class Geral extends javax.swing.JFrame {
                 model.setValueAt(sobrenome, i, 1);
             }
         }
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
+        TextoNome.setText("");
+        TextoSobrenome.setText("");
+        TextoCPF.setText("");
     }
     private void adicionar( String nome, String sobrenome, String CPF){
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        DefaultTableModel model = (DefaultTableModel) TabelaCliente.getModel();
         if(!(CPF.equals("")||nome.equals("")||sobrenome.equals("")))
             model.insertRow(0, new Object[] { nome, sobrenome, CPF });
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
+        TextoNome.setText("");
+        TextoSobrenome.setText("");
+        TextoCPF.setText("");
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,17 +110,18 @@ public class Geral extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jTextField1 = new javax.swing.JTextField();
+        TextoNome = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        TextoSobrenome = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        TextoCPF = new javax.swing.JTextField();
+        BotaoIncluir = new javax.swing.JButton();
+        BotaoAtualizar = new javax.swing.JButton();
+        BotaoExcluir = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaCliente = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        TextoBusca = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -94,36 +133,29 @@ public class Geral extends javax.swing.JFrame {
 
         jLabel3.setText("CPF:");
 
-        jButton1.setText("Incluir");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        BotaoIncluir.setText("Incluir");
+        BotaoIncluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                BotaoIncluirActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Atualizar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        BotaoAtualizar.setText("Atualizar");
+        BotaoAtualizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                BotaoAtualizarActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Listar");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        BotaoExcluir.setText("Excluir");
+        BotaoExcluir.setActionCommand("");
+        BotaoExcluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                BotaoExcluirActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Excluir");
-        jButton4.setActionCommand("");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaCliente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -146,7 +178,9 @@ public class Geral extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TabelaCliente);
+
+        jLabel4.setText("Busca:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -161,23 +195,24 @@ public class Geral extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(TextoSobrenome, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 660, Short.MAX_VALUE)
+                                .addComponent(TextoNome, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(TextoCPF, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(9, 9, 9))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 450, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(TextoBusca, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(BotaoIncluir)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
+                        .addComponent(BotaoAtualizar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)))
+                        .addComponent(BotaoExcluir)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -185,24 +220,25 @@ public class Geral extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(11, 11, 11)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(TextoNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(TextoSobrenome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(TextoCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addGap(12, 12, 12)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(BotaoIncluir)
+                    .addComponent(BotaoAtualizar)
+                    .addComponent(BotaoExcluir)
+                    .addComponent(jLabel4)
+                    .addComponent(TextoBusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE)
                 .addContainerGap())
@@ -238,41 +274,44 @@ public class Geral extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        incluirCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-        adicionar(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());    
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-            atualizarCliente(jTextField1.getText(), jTextField2.getText(), jTextField3.getText());
-            atualizar(jTextField1.getText(), jTextField2.getText(), jTextField3.getText()); 
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        Listar b = new Listar(this,true);
-        Object[] result = b.showDialog();
-        if(!result.equals(new ArrayList<Cliente>())){
-            result=listarCliente(result);
-            refresher(result); 
-        }
+    private void BotaoIncluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotaoIncluirActionPerformed
+        incluirCliente(TextoNome.getText(), TextoSobrenome.getText(), TextoCPF.getText());
+        adicionar(TextoNome.getText(), TextoSobrenome.getText(), TextoCPF.getText());   
         
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_BotaoIncluirActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        // check for selected row first
-            if(jTable1.getSelectedRow() != -1) {
-               removerCliente((String) model.getValueAt(jTable1.getSelectedRow(), 2));
-               model.removeRow(jTable1.getSelectedRow());
-               JOptionPane.showMessageDialog(null, "Selected row deleted successfully");
+    private void BotaoAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotaoAtualizarActionPerformed
+            DefaultTableModel model = (DefaultTableModel) TabelaCliente.getModel();
+            if(TabelaCliente.getSelectedRow() != -1) {
+               String nome = (String) TabelaCliente.getValueAt(TabelaCliente.getSelectedRow(), 0);
+               String sobrenome = (String) TabelaCliente.getValueAt(TabelaCliente.getSelectedRow(), 1);
+               String CPF = (String) TabelaCliente.getValueAt(TabelaCliente.getSelectedRow(), 2);
+               Alterar janela = new Alterar(this,true,nome, sobrenome, CPF);
+               String[] clienteMudado =janela.mostrar();
+               if(clienteMudado[0]!=null){
+                atualizarCliente(clienteMudado[0], clienteMudado[1], clienteMudado[2]);
+                atualizar(clienteMudado[0], clienteMudado[1], clienteMudado[2]); 
+               }
+                
            }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_BotaoAtualizarActionPerformed
+
+    private void BotaoExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotaoExcluirActionPerformed
+        DefaultTableModel model = (DefaultTableModel) TabelaCliente.getModel();
+        // check for selected row first
+            if(TabelaCliente.getSelectedRow() != -1) {
+               removerCliente((String) model.getValueAt(TabelaCliente.getSelectedRow(), 2));
+               model.removeRow(TabelaCliente.getSelectedRow());
+               JOptionPane.showMessageDialog(null, "Cliente removido com sucesso!");
+           }
+    }//GEN-LAST:event_BotaoExcluirActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
+        
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -295,6 +334,7 @@ public class Geral extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
+        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -305,22 +345,23 @@ public class Geral extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton BotaoAtualizar;
+    private javax.swing.JButton BotaoExcluir;
+    private javax.swing.JButton BotaoIncluir;
+    private javax.swing.JTable TabelaCliente;
+    private javax.swing.JTextField TextoBusca;
+    private javax.swing.JTextField TextoCPF;
+    private javax.swing.JTextField TextoNome;
+    private javax.swing.JTextField TextoSobrenome;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables
 
     private Object[] listaCliente() {
